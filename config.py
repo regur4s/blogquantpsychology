@@ -15,14 +15,21 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    # For Vercel, use environment variable or fallback to SQLite
+    # PostgreSQL for production (recommended)
     DATABASE_URL = os.environ.get('DATABASE_URL')
     if not DATABASE_URL:
-        # Vercel serverless doesn't persist files, use environment variable or in-memory
+        # Fallback options
         if os.environ.get('VERCEL_URL'):
+            # For Vercel serverless (temporary data)
             DATABASE_URL = 'sqlite:///:memory:'
         else:
+            # Local production fallback
             DATABASE_URL = 'sqlite:///blog.db'
+    
+    # Fix PostgreSQL URL format if needed (Heroku style)
+    if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
 
 class TestingConfig(Config):

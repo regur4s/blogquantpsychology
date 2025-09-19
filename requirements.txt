@@ -4,3 +4,5 @@ markdown2==2.5.0
 bleach==6.1.0
 python-slugify==8.0.4
 python-dotenv==1.0.1
+psycopg2-binary==2.9.9
+gunicorn==21.2.0
