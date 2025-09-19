@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Admin - My Blog{% endblock %}
+{% block content %}
+  <h1>Admin Dashboard</h1>
+  
+  <div class="admin-actions">
+    <a class="btn" href="{{ url_for('admin_new') }}">+ New Post</a>
+    <a class="btn" href="{{ url_for('admin_categories') }}">📁 Manage Categories</a>
+  </div>
+  
+  <div class="admin-stats">
+    <div class="stat-item">
+      <strong>{{ posts|length }}</strong> Total Posts
+    </div>
+    <div class="stat-item">
+      <strong>{{ posts|selectattr('published')|list|length }}</strong> Published
+    </div>
+    <div class="stat-item">
+      <strong>{{ categories|length }}</strong> Categories
+    </div>
+    <div class="stat-item">
+      <strong>{{ tags|length }}</strong> Tags
+    </div>
+  </div>
+  
+  <h2>Posts</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Tags</th>
+        <th>Views</th>
+        <th>Published</th>
+        <th>Updated</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in posts %}
+        <tr>
+          <td>
+            <strong>{{ p.title }}</strong>
+            {% if not p.published %}<span class="draft-badge">Draft</span>{% endif %}
+          </td>
+          <td>{{ p.category.name if p.category else '-' }}</td>
+          <td>
+            {% if p.tags %}
+              {% for tag in p.tags %}
+                <span class="tag-badge">{{ tag.name }}</span>
+              {% endfor %}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>{{ p.view_count }}</td>
+          <td>{{ 'Yes' if p.published else 'No' }}</td>
+          <td>{{ (p.updated_at or p.created_at).strftime('%m/%d %H:%M') }}</td>
+          <td>
+            <a href="{{ url_for('post_detail', slug=p.slug) }}" target="_blank" title="View">👁️</a>
+            <a href="{{ url_for('admin_edit', post_id=p.id) }}" title="Edit">✏️</a>
+            <form method="post" action="{{ url_for('admin_delete', post_id=p.id) }}" style="display:inline" onsubmit="return confirm('Delete this post?');">
+              <button type="submit" class="link danger" title="Delete">🗑️</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+

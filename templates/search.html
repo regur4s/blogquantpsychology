@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Search{% if query %}: {{ query }}{% endif %} - {{ super() }}{% endblock %}
+
+{% block content %}
+<h1>🔍 Search</h1>
+
+<form method="GET" class="search-form">
+  <div class="form">
+    <label>
+      Search posts:
+      <input type="text" name="q" value="{{ query or '' }}" placeholder="Enter keywords..." autofocus>
+    </label>
+    <button type="submit">Search</button>
+  </div>
+</form>
+
+{% if query %}
+  <h2>Results for "{{ query }}"</h2>
+  
+  {% if posts %}
+    <p class="meta">Found {{ posts|length }} posts</p>
+    <ul class="post-list">
+      {% for post in posts %}
+      <li class="post-item">
+        <h3><a href="{{ url_for('post_detail', slug=post.slug) }}">{{ post.title }}</a></h3>
+        {% if post.excerpt %}
+          <p class="excerpt">{{ post.excerpt }}</p>
+        {% endif %}
+        <div class="meta">
+          {{ post.created_at.strftime('%B %d, %Y') }}
+          {% if post.category %}
+            • 📁 <a href="{{ url_for('category_posts', slug=post.category.slug) }}">{{ post.category.name }}</a>
+          {% endif %}
+          {% if post.view_count > 0 %}
+            • 👁️ {{ post.view_count }} views
+          {% endif %}
+          {% if post.tags %}
+            <br>🏷️ 
+            {% for tag in post.tags %}
+              <a href="{{ url_for('tag_posts', slug=tag.slug) }}" class="tag">{{ tag.name }}</a>
+              {%- if not loop.last %}, {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No posts found matching "{{ query }}". Try different keywords.</p>
+  {% endif %}
+{% endif %}
+
+<p><a href="{{ url_for('index') }}">&larr; Back to all posts</a></p>
+{% endblock %}

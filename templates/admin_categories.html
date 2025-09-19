@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Categories - Admin{% endblock %}
+
+{% block content %}
+<h1>📁 Manage Categories</h1>
+
+<div class="admin-section">
+  <h2>Add New Category</h2>
+  <form method="POST" class="form">
+    <label>
+      Category Name:
+      <input type="text" name="name" required>
+    </label>
+    <label>
+      Description:
+      <textarea name="description" rows="3"></textarea>
+    </label>
+    <button type="submit">Add Category</button>
+  </form>
+</div>
+
+<div class="admin-section">
+  <h2>Existing Categories</h2>
+  {% if categories %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Posts</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category in categories %}
+        <tr>
+          <td><strong>{{ category.name }}</strong></td>
+          <td>{{ category.description or '-' }}</td>
+          <td>{{ category.posts|length }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin_delete_category', category_id=category.id) }}" 
+                  style="display:inline" onsubmit="return confirm('Delete this category?')">
+              <button type="submit" class="link danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No categories yet.</p>
+  {% endif %}
+</div>
+
+<p><a href="{{ url_for('admin_dashboard') }}">&larr; Back to Admin</a></p>
+{% endblock %}

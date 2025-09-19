@@ -1,0 +1,9 @@
+app: wsgi:app
+
+http:
+  - url: /.*
+
+runtime: python311
+
+env_variables:
+  FLASK_ENV: production

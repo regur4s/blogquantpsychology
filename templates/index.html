@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}My Blog{% endblock %}
+{% block content %}
+  <div class="blog-layout">
+    <main class="main-content">
+      <h1>Latest Posts</h1>
+      {% if posts %}
+        <ul class="post-list">
+          {% for p in posts %}
+            <li class="post-item">
+              <h2><a href="{{ url_for('post_detail', slug=p.slug) }}">{{ p.title }}</a></h2>
+              <div class="meta">
+                {{ p.created_at.strftime('%B %d, %Y') }}
+                {% if p.category %}
+                  • 📁 <a href="{{ url_for('category_posts', slug=p.category.slug) }}">{{ p.category.name }}</a>
+                {% endif %}
+                {% if p.view_count > 0 %}
+                  • 👁️ {{ p.view_count }} views
+                {% endif %}
+              </div>
+              {% if p.excerpt %}
+                <p class="excerpt">{{ p.excerpt }}</p>
+                <a href="{{ url_for('post_detail', slug=p.slug) }}" class="read-more">Read more →</a>
+              {% else %}
+                <p>{{ (p.content_md or '')[:200] }}{% if (p.content_md or '')|length > 200 %}...{% endif %}</p>
+              {% endif %}
+              {% if p.tags %}
+                <div class="tags">
+                  🏷️ 
+                  {% for tag in p.tags %}
+                    <a href="{{ url_for('tag_posts', slug=tag.slug) }}" class="tag">{{ tag.name }}</a>
+                    {%- if not loop.last %}, {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No posts yet.</p>
+      {% endif %}
+    </main>
+    
+    <aside class="sidebar">
+      {% if categories %}
+        <div class="widget">
+          <h3>📁 Categories</h3>
+          <ul class="category-list">
+            {% for category in categories %}
+              <li><a href="{{ url_for('category_posts', slug=category.slug) }}">{{ category.name }}</a> <span class="count">({{ category.posts|length }})</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+      
+      {% if popular_posts %}
+        <div class="widget">
+          <h3>👁️ Popular Posts</h3>
+          <ul class="popular-list">
+            {% for post in popular_posts %}
+              <li><a href="{{ url_for('post_detail', slug=post.slug) }}">{{ post.title }}</a> <span class="views">({{ post.view_count }} views)</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+{% endblock %}
+

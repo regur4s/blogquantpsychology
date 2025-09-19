@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="category-header">
+  <h1>📁 {{ category.name }}</h1>
+  {% if category.description %}
+    <p class="category-description">{{ category.description }}</p>
+  {% endif %}
+  <p class="meta">{{ posts|length }} posts</p>
+</div>
+
+{% if posts %}
+  <ul class="post-list">
+    {% for post in posts %}
+    <li class="post-item">
+      <h2><a href="{{ url_for('post_detail', slug=post.slug) }}">{{ post.title }}</a></h2>
+      {% if post.excerpt %}
+        <p class="excerpt">{{ post.excerpt }}</p>
+      {% endif %}
+      <div class="meta">
+        {{ post.created_at.strftime('%B %d, %Y') }}
+        {% if post.view_count > 0 %}
+          • 👁️ {{ post.view_count }} views
+        {% endif %}
+        {% if post.tags %}
+          <br>🏷️ 
+          {% for tag in post.tags %}
+            <a href="{{ url_for('tag_posts', slug=tag.slug) }}" class="tag">{{ tag.name }}</a>
+            {%- if not loop.last %}, {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No posts in this category yet.</p>
+{% endif %}
+
+<p><a href="{{ url_for('index') }}">&larr; Back to all posts</a></p>
+{% endblock %}
