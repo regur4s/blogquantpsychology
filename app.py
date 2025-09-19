@@ -17,6 +17,10 @@ def create_app():
     config_name = os.environ.get('FLASK_ENV', 'development')
     app.config.from_object(config[config_name])
 
+    # For Vercel serverless, use in-memory SQLite
+    if config_name == 'production' and 'vercel' in os.environ.get('VERCEL_URL', ''):
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+
     # Init DB
     db.init_app(app)
 

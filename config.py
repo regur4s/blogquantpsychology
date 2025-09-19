@@ -15,7 +15,14 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///blog.db'
+    # For Vercel, use environment variable or fallback to SQLite
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if not DATABASE_URL:
+        # Vercel serverless doesn't persist files, use environment variable or in-memory
+        if os.environ.get('VERCEL_URL'):
+            DATABASE_URL = 'sqlite:///:memory:'
+        else:
+            DATABASE_URL = 'sqlite:///blog.db'
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
 
 class TestingConfig(Config):
